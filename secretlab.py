@@ -64,8 +64,21 @@ st.dataframe(stats)
 author_stats = stats.groupby(['video_author'])['viewCount','commentCount','likeCount','dislikeCount'].sum()
 author_stats.sort_values(by=['viewCount'],inplace=True,ascending=False)
 
-
+@st.cache
 new_model = Word2Vec.load('mywordvecs.model')
+d2v_model = Doc2Vec.load('dm_model.model')
+
+def predict(text_list):
+    model = pickle.load(open('clf.pkl','rb'))
+    return model.predict(text_list)
+
+
+def predict_proba(text_list):
+    model = pickle.load(open('clf.pkl','rb'))
+    return model.predict_proba(text_list)
+
+
+
 
 def tsnescatterplot(model, word, list_names):
     """ Plot in seaborn the results from the t-SNE dimensionality reduction algorithm of the vectors of a query word,
@@ -166,24 +179,18 @@ topics = ['Firmness of the seat causing back issues',
             'Compliments to the actual video'
         ]
 
-cleaned_text = textcleaner.transform_text(message)
+# cleaned_text = textcleaner.transform_text(message)
 if st.checkbox('Show cleaned text (removing non-word characters,digits and lemmatise text)'):
-    cleaned_up = [word for word in simple_preprocess(str(cleaned_text))]
+    cleaned_up = [word for word in simple_preprocess(message)]
     st.text(cleaned_up)
 
-d2v_model = Doc2Vec.load('dm_model.model')
+    
 vector = d2v_model.infer_vector(cleaned_up)
+
+
 st.subheader(" Input comment transformed into a feature vector by Doc2Vec")
 st.write(vector)
 
-def predict(text_list):
-    model = pickle.load(open('clf.pkl','rb'))
-    return model.predict(text_list)
-
-
-def predict_proba(text_list):
-    model = pickle.load(open('clf.pkl','rb'))
-    return model.predict_proba(text_list)
 
 
 if st.button('Analyse post'):
