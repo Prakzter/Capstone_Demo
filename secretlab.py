@@ -65,8 +65,14 @@ author_stats = stats.groupby(['video_author'])['viewCount','commentCount','likeC
 author_stats.sort_values(by=['viewCount'],inplace=True,ascending=False)
 
 @st.cache
-new_model = Word2Vec.load('mywordvecs.model')
-d2v_model = Doc2Vec.load('dm_model.model')
+def w2vmod():
+    new_model = Word2Vec.load('mywordvecs.model')
+    return new_model
+
+def d2vmod():
+    d2v_model = Doc2Vec.load('dm_model.model')
+    return d2v_model
+
 
 def predict(text_list):
     model = pickle.load(open('clf.pkl','rb'))
@@ -77,7 +83,8 @@ def predict_proba(text_list):
     model = pickle.load(open('clf.pkl','rb'))
     return model.predict_proba(text_list)
 
-
+w2vmod()
+d2vmod()
 
 
 def tsnescatterplot(model, word, list_names):
